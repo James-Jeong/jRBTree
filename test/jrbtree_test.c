@@ -170,19 +170,19 @@ TEST(RBTree_INT, DeleteNodeByKey, {
 
 	printf("- Delete Start -\n");
 
-	printf("@ Before / Delete key :%d\n", expected1);
+	printf("@ Before / Delete key : %d\n", expected1);
 	JRBTreePrintAll(tree);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected1), DeleteSuccess);
 	printf("@ After\n");
 	JRBTreePrintAll(tree);
 
-	printf("@ Before / Delete key :%d\n", expected3);
+	printf("@ Before / Delete key : %d\n", expected3);
 	JRBTreePrintAll(tree);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected3), DeleteSuccess);
 	printf("@ After\n");
 	JRBTreePrintAll(tree);
 
-	printf("@ Before / Delete key :%d\n", expected4);
+	printf("@ Before / Delete key : %d\n", expected4);
 	JRBTreePrintAll(tree);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected4), DeleteSuccess);
 	printf("@ After\n");
@@ -238,10 +238,16 @@ TEST(Node_CHAR, GetKey, {
 TEST(RBTree_CHAR, AddNode, {
 	JRBTreePtr tree = NewJRBTree(CharType);
 	char expected1 = 'a';
-	char expected2 = 'b';
+	char expected2 = '1';
 	char expected3 = 'c';
-	char expected4 = 'd';
+	char expected4 = '5';
 	char expected5 = 'e';
+	char expected6 = '-';
+	char expected7 = 'z';
+	char expected8 = 'c';
+	char expected9 = '@';
+	char expected10 = 'b';
+	char expected11 = 'w';
 
 	// 정상 동작 확인
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected1));
@@ -249,7 +255,15 @@ TEST(RBTree_CHAR, AddNode, {
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected3));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected4));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected5));
-	EXPECT_NUM_EQUAL(*((char*)(tree->root->key)), expected3);
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected6));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected7));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected8));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected9));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected10));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected11));
+	JRBTreePrintAll(tree);
+
+//	EXPECT_NUM_EQUAL(*((char*)(tree->root->key)), expected3);
 	
 	// 중복 허용 테스트
 	EXPECT_NULL(JRBTreeInsertNode(tree, &expected1));
@@ -292,22 +306,52 @@ TEST(RBTree_CHAR, GetData, {
 TEST(RBTree_CHAR, DeleteNodeByKey, {
 	JRBTreePtr tree = NewJRBTree(CharType);
 	char expected1 = 'a';
-	char expected2 = 'b';
+	char expected2 = '1';
 	char expected3 = 'c';
-	char expected4 = 'd';
+	char expected4 = '5';
 	char expected5 = 'e';
+	char expected6 = '-';
+	char expected7 = 'z';
+	char expected8 = 'c';
+	char expected9 = '@';
+	char expected10 = 'b';
+	char expected11 = 'w';
 
+	// 정상 동작 확인
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected1));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected2));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected3));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected4));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected5));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected6));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected7));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected8));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected9));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected10));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected11));
+	JRBTreePrintAll(tree);
 
+	printf("- Delete Start -\n");
+
+	printf("@ Before / Delete key : %c\n", expected1);
+	JRBTreePrintAll(tree);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected1), DeleteSuccess);
-	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected3), DeleteSuccess);
-	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected5), DeleteSuccess);
+	printf("@ After\n");
+	JRBTreePrintAll(tree);
 
-	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected5), DeleteFail);
+	printf("@ Before / Delete key : %c\n", expected3);
+	JRBTreePrintAll(tree);
+	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected3), DeleteSuccess);
+	printf("@ After\n");
+	JRBTreePrintAll(tree);
+
+	printf("@ Before / Delete key : %c\n", expected4);
+	JRBTreePrintAll(tree);
+	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected4), DeleteSuccess);
+	printf("@ After\n");
+	JRBTreePrintAll(tree);
+
+	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, &expected1), DeleteFail);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(NULL, &expected1), DeleteFail);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, NULL), DeleteFail);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(NULL, NULL), DeleteFail);
@@ -356,18 +400,42 @@ TEST(Node_STRING, GetKey, {
 TEST(RBTree_STRING, AddNode, {
 	JRBTreePtr tree = NewJRBTree(StringType);
 	char *expected1 = "abc";
-	char *expected2 = "de3f";
-	char *expected3 = "11223";
-	char *expected4 = "awdg";
-	char *expected5 = "24g";
+	char *expected2 = "def";
+	char *expected3 = "zone";
+	char *expected4 = "dog";
+	char *expected5 = "human";
+	char *expected6 = "#define";
+	char *expected7 = "[UXCUTOR]";
+	char *expected8 = "010-1234-5678";
+	char *expected9 = "age : 10";
+	char *expected10 = "apple";
+	char *expected11 = "orange";
 
 	// 정상 동작 확인
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected1));
+	JRBTreePrintAll(tree);
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected2));
+	JRBTreePrintAll(tree);
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected3));
+	JRBTreePrintAll(tree);
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected4));
+	JRBTreePrintAll(tree);
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected5));
-	EXPECT_STR_EQUAL((char*)(tree->root->key), expected1);
+	JRBTreePrintAll(tree);
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected6));
+	JRBTreePrintAll(tree);
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected7));
+	JRBTreePrintAll(tree);
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected8));
+	JRBTreePrintAll(tree);
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected9));
+	JRBTreePrintAll(tree);
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected10));
+	JRBTreePrintAll(tree);
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected11));
+	JRBTreePrintAll(tree);
+
+//	EXPECT_STR_EQUAL((char*)(tree->root->key), expected1);
 	
 	// 중복 허용 테스트
 	EXPECT_NULL(JRBTreeInsertNode(tree, expected1));
@@ -412,20 +480,62 @@ TEST(RBTree_STRING, GetData, {
 TEST(RBTree_STRING, DeleteNodeByKey, {
 	JRBTreePtr tree = NewJRBTree(StringType);
 	char *expected1 = "abc";
-	char *expected2 = "de3f";
-	char *expected3 = "11223";
-	char *expected4 = "awdg";
-	char *expected5 = "24g";
+	char *expected2 = "def";
+	char *expected3 = "zone";
+	char *expected4 = "dog";
+	char *expected5 = "human";
+	char *expected6 = "#define";
+	char *expected7 = "[UXCUTOR]";
+	char *expected8 = "010-1234-5678";
+	char *expected9 = "age : 10";
+	char *expected10 = "apple";
+	char *expected11 = "orange";
 
+	// 정상 동작 확인
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected1));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected2));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected3));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected4));
 	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected5));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected6));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected7));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected8));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected9));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected10));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected11));
+	JRBTreePrintAll(tree);
 
+	printf("- Delete Start -\n");
+
+	printf("@ Before / Delete key : %s\n", expected1);
+	JRBTreePrintAll(tree);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, expected1), DeleteSuccess);
+	printf("@ After\n");
+	JRBTreePrintAll(tree);
+
+	printf("@ Before / Delete key : %s\n", expected3);
+	JRBTreePrintAll(tree);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, expected3), DeleteSuccess);
-	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, expected5), DeleteSuccess);
+	printf("@ After\n");
+	JRBTreePrintAll(tree);
+
+	printf("@ Before / Delete key : %s\n", expected4);
+	JRBTreePrintAll(tree);
+	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, expected4), DeleteSuccess);
+	printf("@ After\n");
+	JRBTreePrintAll(tree);
+
+	printf("@ Before / Delete key : %s\n", expected7);
+	JRBTreePrintAll(tree);
+	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, expected7), DeleteSuccess);
+	printf("@ After\n");
+	JRBTreePrintAll(tree);
+
+	printf("@ Before / Delete key : %s\n", expected2);
+	JRBTreePrintAll(tree);
+	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, expected2), DeleteSuccess);
+	printf("@ After\n");
+	JRBTreePrintAll(tree);
 
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, expected1), DeleteFail);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(NULL, expected1), DeleteFail);
@@ -454,23 +564,23 @@ int main()
 		Test_RBTree_INT_AddNode,
 		Test_RBTree_INT_SetData,
 		Test_RBTree_INT_GetData,
-		Test_RBTree_INT_DeleteNodeByKey
+		Test_RBTree_INT_DeleteNodeByKey,
 
 		// @ CHAR Test -------------------------------------------
-//		Test_Node_CHAR_SetKey,
-//		Test_Node_CHAR_GetKey,
-//		Test_RBTree_CHAR_AddNode,
-//		Test_RBTree_CHAR_SetData,
-//		Test_RBTree_CHAR_GetData,
-//		Test_RBTree_CHAR_DeleteNodeByKey,
+		Test_Node_CHAR_SetKey,
+		Test_Node_CHAR_GetKey,
+		Test_RBTree_CHAR_AddNode,
+		Test_RBTree_CHAR_SetData,
+		Test_RBTree_CHAR_GetData,
+		Test_RBTree_CHAR_DeleteNodeByKey,
 
 		// @ STRING Test -------------------------------------------
-//		Test_Node_STRING_SetKey,
-//		Test_Node_STRING_GetKey,
-//		Test_RBTree_STRING_AddNode,
-//		Test_RBTree_STRING_SetData,
-//		Test_RBTree_STRING_GetData,
-//		Test_RBTree_STRING_DeleteNodeByKey
+		Test_Node_STRING_SetKey,
+		Test_Node_STRING_GetKey,
+		Test_RBTree_STRING_AddNode,
+		Test_RBTree_STRING_SetData,
+		Test_RBTree_STRING_GetData,
+		Test_RBTree_STRING_DeleteNodeByKey
     );
 
     RUN_ALL_TESTS();

@@ -220,7 +220,7 @@ JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *key)
 				else parentNode->right = newNode;
 				break;
 			case StringType:
-				if(strncmp((char*)(parentNode->key), (char*)(key), _GetCompareLength((char*)(parentNode->key), (char*)(key))) < 0) parentNode->left = newNode;
+				if(strncmp((char*)(parentNode->key), (char*)(key), _GetCompareLength((char*)(parentNode->key), (char*)(key))) > 0) parentNode->left = newNode;
 				else parentNode->right = newNode;
 				break;
 			default:
@@ -277,8 +277,8 @@ JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *key)
 				if(_newNode == parentNode->left)
 				{
 					// 노드 색 변경
-					_newNode->color = Black;
-					parentNode->color = Red;
+					_newNode->color = Red;
+					parentNode->color = Black;
 					if(grandParentNode != tree->root) grandParentNode->color = Red;
 
 					// case 2-2-1)
@@ -304,8 +304,7 @@ JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *key)
 	// 첫 노드이면 루트 노드에 추가
 	else tree->root = newNode;
 
-	JRBTreeRebalance(tree);
-
+	tree->root->color = Black;
 	return tree;
 }
 
@@ -341,6 +340,7 @@ DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key)
 		DeleteJNode(&dummyNode);
 		return DeleteFail;
 	}
+
 	selectedNode = currentNode;
 
 	// 자식 노드가 없는 경우(최하위 노드)
@@ -364,11 +364,10 @@ DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key)
 
 		scNode->parent = parentNode;
 
-		// Black 노드를 삭제할 시 Double Red 문제 발생
+		// Black 노드 삭제 시 Double Red 문제 발생
 		// 삭제할 노드가 Black 이고 부모 노드가 Red 이면, 자식 노드를 Black 으로 바꾼다.
 		if((selectedNode->color == Black) && (parentNode->color == Red))
 		{
-			printf("123\n");
 			if(scNode->color != Black) scNode->color = Black;
 		}
 	}
@@ -391,11 +390,11 @@ DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key)
 		if(spNode->left == scNode) spNode->left = scNode->right;
 		else spNode->right = scNode->right;
 
-		// 대체 노드의 오른쪽 노드와 부모 노드가 Red 인 경우
-		// 부모 노드를 Black 으로 바꾼다.
-		if((scNode->right != NULL) && (scNode->right->color == Red) && (spNode->color == Red))
+		// 대체 노드가 Black 이고, 대체 노드의 오른쪽 노드와 삭제할 노드가 Red 인 경우
+		// Black height 조건을 성립시키기 위해 대체 노드의 오른쪽 노드를 Black 으로 바꾼다.
+		if((scNode->right != NULL) && (scNode->right->color == Red) && (selectedNode->color == Red))
 		{
-			spNode->color = Black;
+			scNode->right->color = Black;
 		}
 
 		JNodeSetKey(selectedNode, tempKey);
@@ -407,7 +406,7 @@ DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key)
 
 	DeleteJNode(&selectedNode);
 	DeleteJNode(&dummyNode);
-
+	
 	return result;
 }
 
@@ -531,7 +530,7 @@ static JNodePtr JNodeMove(JNodePtr node, void *key, KeyType type)
 			break;
 		case StringType:
 		{
-			if(strncmp((char*)(node->key), (char*)(key), _GetCompareLength((char*)(node->key), (char*)(key))) < 0) node = node->left;
+			if(strncmp((char*)(node->key), (char*)(key), _GetCompareLength((char*)(node->key), (char*)(key))) > 0) node = node->left;
 			else node = node->right;
 			break;
 		}
@@ -714,10 +713,8 @@ static JRBTreePtr JRBTreeRebalance(JRBTreePtr tree)
 
 	int heightDiff = JNodeGetBlackHeightDiff(tree->root);
 
-	if(heightDiff > 1) tree->root = JNodeRightRotate(tree->root);
-	if(heightDiff < -1) tree->root = JNodeLeftRotate(tree->root);
-
-	//tree->root->color = Black;
+	if(heightDiff >= 1) tree->root = JNodeRightRotate(tree->root);
+	if(heightDiff <= -1) tree->root = JNodeLeftRotate(tree->root);
 
 	return tree;
 }
