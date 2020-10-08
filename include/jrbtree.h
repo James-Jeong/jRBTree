@@ -98,6 +98,7 @@ void* JRBTreeSetData(JRBTreePtr tree, void *data);
 
 JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *data);
 DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key);
+JNodePtr JRBTreeFindNodeByKey(const JRBTreePtr tree, void *key);
 
 void JRBTreePrintAll(const JRBTreePtr tree);
 

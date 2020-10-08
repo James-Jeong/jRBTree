@@ -196,6 +196,31 @@ TEST(RBTree_INT, DeleteNodeByKey, {
 	DeleteJRBTree(&tree);
 })
 
+TEST(RBTree_INT, FindNodeByKey, {
+	JRBTreePtr tree = NewJRBTree(IntType);
+	int expected1 = 10;
+	int expected2 = 12;
+	int expected3 = 2;
+	int expected4 = 9;
+
+	// 정상 동작 확인
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected1));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected2));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected3));
+
+	EXPECT_NOT_NULL(JRBTreeFindNodeByKey(tree, &expected1));
+	EXPECT_NUM_EQUAL(*((int*)(JRBTreeFindNodeByKey(tree, &expected1)->key)), expected1);
+	EXPECT_NUM_EQUAL(*((int*)(JRBTreeFindNodeByKey(tree, &expected2)->key)), expected2);
+	EXPECT_NUM_EQUAL(*((int*)(JRBTreeFindNodeByKey(tree, &expected3)->key)), expected3);
+
+	EXPECT_NULL(JRBTreeFindNodeByKey(tree, &expected4));
+	EXPECT_NULL(JRBTreeFindNodeByKey(NULL, &expected1));
+	EXPECT_NULL(JRBTreeFindNodeByKey(tree, NULL));
+	EXPECT_NULL(JRBTreeFindNodeByKey(NULL, NULL));
+
+	DeleteJRBTree(&tree);
+})
+
 // ---------- RB Tree char Test ----------
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -355,6 +380,31 @@ TEST(RBTree_CHAR, DeleteNodeByKey, {
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(NULL, &expected1), DeleteFail);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(tree, NULL), DeleteFail);
 	EXPECT_NUM_EQUAL(JRBTreeDeleteNodeByKey(NULL, NULL), DeleteFail);
+
+	DeleteJRBTree(&tree);
+})
+
+TEST(RBTree_CHAR, FindNodeByKey, {
+	JRBTreePtr tree = NewJRBTree(CharType);
+	char expected1 = '5';
+	char expected2 = 'a';
+	char expected3 = '@';
+	char expected4 = '?';
+
+	// 정상 동작 확인
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected1));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected2));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, &expected3));
+
+	EXPECT_NOT_NULL(JRBTreeFindNodeByKey(tree, &expected1));
+	EXPECT_NUM_EQUAL(*((char*)(JRBTreeFindNodeByKey(tree, &expected1)->key)), expected1);
+	EXPECT_NUM_EQUAL(*((char*)(JRBTreeFindNodeByKey(tree, &expected2)->key)), expected2);
+	EXPECT_NUM_EQUAL(*((char*)(JRBTreeFindNodeByKey(tree, &expected3)->key)), expected3);
+
+	EXPECT_NULL(JRBTreeFindNodeByKey(tree, &expected4));
+	EXPECT_NULL(JRBTreeFindNodeByKey(NULL, &expected1));
+	EXPECT_NULL(JRBTreeFindNodeByKey(tree, NULL));
+	EXPECT_NULL(JRBTreeFindNodeByKey(NULL, NULL));
 
 	DeleteJRBTree(&tree);
 })
@@ -545,6 +595,31 @@ TEST(RBTree_STRING, DeleteNodeByKey, {
 	DeleteJRBTree(&tree);
 })
 
+TEST(RBTree_STRING, FindNodeByKey, {
+	JRBTreePtr tree = NewJRBTree(StringType);
+	char* expected1 = "#define";
+	char* expected2 = "Black";
+	char* expected3 = "Red";
+	char* expected4 = "???";
+
+	// 정상 동작 확인
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected1));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected2));
+	EXPECT_NOT_NULL(JRBTreeInsertNode(tree, expected3));
+
+	EXPECT_NOT_NULL(JRBTreeFindNodeByKey(tree, expected1));
+	EXPECT_STR_EQUAL((char*)(JRBTreeFindNodeByKey(tree, expected1)->key), expected1);
+	EXPECT_STR_EQUAL((char*)(JRBTreeFindNodeByKey(tree, expected2)->key), expected2);
+	EXPECT_STR_EQUAL((char*)(JRBTreeFindNodeByKey(tree, expected3)->key), expected3);
+
+	EXPECT_NULL(JRBTreeFindNodeByKey(tree, expected4));
+	EXPECT_NULL(JRBTreeFindNodeByKey(NULL, expected1));
+	EXPECT_NULL(JRBTreeFindNodeByKey(tree, NULL));
+	EXPECT_NULL(JRBTreeFindNodeByKey(NULL, NULL));
+
+	DeleteJRBTree(&tree);
+})
+
 ////////////////////////////////////////////////////////////////////////////////
 /// Main Function
 ////////////////////////////////////////////////////////////////////////////////
@@ -565,6 +640,7 @@ int main()
 		Test_RBTree_INT_SetData,
 		Test_RBTree_INT_GetData,
 		Test_RBTree_INT_DeleteNodeByKey,
+		Test_RBTree_INT_FindNodeByKey,
 
 		// @ CHAR Test -------------------------------------------
 		Test_Node_CHAR_SetKey,
@@ -573,6 +649,7 @@ int main()
 		Test_RBTree_CHAR_SetData,
 		Test_RBTree_CHAR_GetData,
 		Test_RBTree_CHAR_DeleteNodeByKey,
+		Test_RBTree_CHAR_FindNodeByKey,
 
 		// @ STRING Test -------------------------------------------
 		Test_Node_STRING_SetKey,
@@ -580,7 +657,8 @@ int main()
 		Test_RBTree_STRING_AddNode,
 		Test_RBTree_STRING_SetData,
 		Test_RBTree_STRING_GetData,
-		Test_RBTree_STRING_DeleteNodeByKey
+		Test_RBTree_STRING_DeleteNodeByKey,
+		Test_RBTree_STRING_FindNodeByKey
     );
 
     RUN_ALL_TESTS();
