@@ -99,10 +99,6 @@ void* JRBTreeSetData(JRBTreePtr tree, void *data);
 JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *data);
 DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key);
 
-void JRBTreePreorderTraverse(const JRBTreePtr tree);
-void JRBTreeInorderTraverse(const JRBTreePtr tree);
-void JRBTreePostorderTraverse(const JRBTreePtr tree);
-
 void JRBTreePrintAll(const JRBTreePtr tree);
 
 #endif

@@ -12,9 +12,6 @@ static JNodePtr JNodeRightRotate(const JNodePtr node);
 static JNodePtr JNodeLeftRotate(const JNodePtr node);
 static void JNodeDeleteChilds(JNodePtr node);
 static JNodePtr JNodeMove(JNodePtr node, void *key, KeyType type);
-static void JNodePreorderTraverse(const JNodePtr node, KeyType type);
-static void JNodeInorderTraverse(const JNodePtr node, KeyType type);
-static void JNodePostorderTraverse(const JNodePtr node, KeyType type);
 static void JNodePrintKey(const JNodePtr node, KeyType type);
 static JNodePtr JNodeGetUncle(JNodePtr node);
 static JNodePtr JNodeGetGrandParent(JNodePtr node);
@@ -281,7 +278,7 @@ JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *key)
 				{
 					// 노드 색 변경
 					_newNode->color = Black;
-					parentNode->color = Black;
+					parentNode->color = Red;
 					if(grandParentNode != tree->root) grandParentNode->color = Red;
 
 					// case 2-2-1)
@@ -308,9 +305,6 @@ JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *key)
 	else tree->root = newNode;
 
 	JRBTreeRebalance(tree);
-
-	JRBTreePrintAll(tree);
-	printf("---------\n");
 
 	return tree;
 }
@@ -359,6 +353,7 @@ DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key)
 	else if((selectedNode->left == NULL) || (selectedNode->right == NULL))
 	{
 		// child node of selected node
+		JNodePtr parentNode = selectedNode->parent;
 		JNodePtr scNode = NULL;
 
 		if(selectedNode->left != NULL) scNode = selectedNode->left;
@@ -370,30 +365,11 @@ DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key)
 		scNode->parent = parentNode;
 
 		// Black 노드를 삭제할 시 Double Red 문제 발생
-		if(selectedNode->color == Black)
+		// 삭제할 노드가 Black 이고 부모 노드가 Red 이면, 자식 노드를 Black 으로 바꾼다.
+		if((selectedNode->color == Black) && (parentNode->color == Red))
 		{
+			printf("123\n");
 			if(scNode->color != Black) scNode->color = Black;
-		}
-
-		// 이중 Black 노드 문제 발생
-		JNodePtr parentNode = scNode->parent;
-		JNodePtr uncleNode = JNodeGetUncle(scNode);
-		// 삼촌 노드가 Red 인 경우
-		if((parentNode->color == Black) && (uncleNode->color == Red))
-		{
-			parentNode->color = Red;
-			uncleNode->color = Black;
-			parentNode = JNodeLeftRotate(parentNode);
-		}
-		// 삼촌 노드가 Black 인 경우
-		else if((parentNode->color == Black) && (uncleNode->color == Black))
-		{
-			uncleNode->color = Red;
-			if(parentNode->right != NULL)
-			{
-				if(parentNode->left == scNode) parentNode->right->color = Red;
-				else parentNode->left->color = Red;
-			}
 		}
 	}
 	// 자식 노드가 두 개 다 있는 경우
@@ -415,6 +391,13 @@ DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key)
 		if(spNode->left == scNode) spNode->left = scNode->right;
 		else spNode->right = scNode->right;
 
+		// 대체 노드의 오른쪽 노드와 부모 노드가 Red 인 경우
+		// 부모 노드를 Black 으로 바꾼다.
+		if((scNode->right != NULL) && (scNode->right->color == Red) && (spNode->color == Red))
+		{
+			spNode->color = Black;
+		}
+
 		JNodeSetKey(selectedNode, tempKey);
 		selectedNode = scNode;
 	}
@@ -422,50 +405,10 @@ DeleteResult JRBTreeDeleteNodeByKey(JRBTreePtr tree, void *key)
 	// 루트 노드 삭제 시 변경된 다른 노드로 바꾼다.
 	if(dummyNode->right != tree->root) tree->root = dummyNode->right;
 
-
 	DeleteJNode(&selectedNode);
 	DeleteJNode(&dummyNode);
 
 	return result;
-}
-
-/**
- * @fn void JRBTreePreorderTraverse(const JRBTreePtr tree)
- * @brief RB Tree 를 전위 순회하며 노드의 키를 출력하는 함수
- * @param tree 순회할 RB Tree (입력, 읽기 전용)
- * @return 반환값 없음
- */
-void JRBTreePreorderTraverse(const JRBTreePtr tree)
-{
-	if(tree == NULL) return;
-	JNodePreorderTraverse(tree->root, tree->type);
-	printf("\n");
-}
-
-/**
- * @fn void JRBTreeInorderTraverse(const JRBTreePtr tree)
- * @brief RB Tree 를 중위 순회하며 노드의 키를 출력하는 함수
- * @param tree 순회할 RB Tree (입력, 읽기 전용)
- * @return 반환값 없음
- */
-void JRBTreeInorderTraverse(const JRBTreePtr tree)
-{
-	if(tree == NULL) return;
-	JNodeInorderTraverse(tree->root, tree->type);
-	printf("\n");
-}
-
-/**
- * @fn void JRBTreePostorderTraverse(const JRBTreePtr tree)
- * @brief RB Tree 를 후위 순회하며 노드의 키를 출력하는 함수
- * @param tree 순회할 RB Tree (입력, 읽기 전용)
- * @return 반환값 없음
- */
-void JRBTreePostorderTraverse(const JRBTreePtr tree)
-{
-	if(tree == NULL) return;
-	JNodePostorderTraverse(tree->root, tree->type);
-	printf("\n");
 }
 
 void JRBTreePrintAll(const JRBTreePtr tree)
