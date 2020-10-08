@@ -14,15 +14,6 @@ typedef enum DeleteResult
 	DeleteSuccess = 1
 } DeleteResult;
 
-// 검색 결과 열거형
-typedef enum FindResult
-{
-	// 실패
-	FindFail = -1,
-	// 성공
-	FindSuccess = 1
-} FindResult;
-
 // 키 유형 열거형
 typedef enum KeyType
 {
@@ -36,6 +27,7 @@ typedef enum KeyType
 	StringType
 } KeyType;
 
+// 노드 색 열거형
 typedef enum NodeColor
 {
 	// Red
@@ -45,19 +37,14 @@ typedef enum NodeColor
 } NodeColor;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Macro
-///////////////////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////////////////
 /// Definitions
 ///////////////////////////////////////////////////////////////////////////////
 
 // Linked List 에서 key 를 관리하기 위한 노드 구조체
 typedef struct _jnode_t {
-	// 노드 색깔
+	// 노드 색
 	NodeColor color;
-	// Value
+	// 키
 	void *key;
 	// 부모 노드 주소
 	struct _jnode_t *parent;
