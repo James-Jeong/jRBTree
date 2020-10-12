@@ -16,15 +16,13 @@ static void JNodePrintKey(const JNodePtr node, KeyType type);
 static JNodePtr JNodeGetUncle(const JNodePtr node);
 static JNodePtr JNodeGetGrandParent(const JNodePtr node);
 static JNodePtr JNodeSetParentPtr(const JNodePtr node);
-static int JNodeGetBlackHeight(const JNodePtr node);
-static int JNodeGetBlackHeightDiff(const JNodePtr node);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Predefinition of JRBTree Static Functions
 ////////////////////////////////////////////////////////////////////////////////
 
 static void JRBTreePrintHeight(const JNodePtr node, int height, KeyType type, char position);
-static JRBTreePtr JRBTreeRebalance(const JRBTreePtr tree);
+static JRBTreePtr JRBTreeSetChildNode(const JRBTreePtr tree, const JNodePtr parentNode, const JNodePtr childNode);
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Predefinition of Util Static Functions
@@ -208,21 +206,8 @@ JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *key)
 	// 첫 노드가 아니면 자식 노드 추가
 	if(parentNode != NULL)
 	{
-		switch(tree->type)
+		if(JRBTreeSetChildNode(tree, parentNode, newNode) == NULL)
 		{
-			case IntType:
-				if(*((int*)(parentNode->key)) > *((int*)(key))) parentNode->left = newNode;
-				else parentNode->right = newNode;
-				break;
-			case CharType:
-				if(*((char*)(parentNode->key)) > *((char*)(key))) parentNode->left = newNode;
-				else parentNode->right = newNode;
-				break;
-			case StringType:
-				if(strncmp((char*)(parentNode->key), (char*)(key), _GetCompareLength((char*)(parentNode->key), (char*)(key))) > 0) parentNode->left = newNode;
-				else parentNode->right = newNode;
-				break;
-			default:
 				DeleteJNode(&newNode);
 				return NULL;
 		}
@@ -522,6 +507,7 @@ static void JNodeDeleteChilds(JNodePtr node)
 /**
  * @fn static JNodePtr JNodeMove(JNodePtr node, void *key, KeyType type)
  * @brief 지정한 노드의 키와 전달받은 키를 비교해서 저장할 노드의 위치를 찾아 그 노드의 주소를 반환하는 함수 
+ * JRBTreeInsertNode 와 JRBTreeFindNodeByKey 함수에서 호출되므로 매개변수 NULL 체크를 수행하지 않음
  * @param node 위치를 움직일 노드의 주소(입력)
  * @param key 전달받은 키(입력)
  * @param type 키의 데이터 유형(입력)
@@ -551,51 +537,6 @@ static JNodePtr JNodeMove(JNodePtr node, void *key, KeyType type)
 }
 
 /**
- * @fn static void JNodePreorderTraverse(const JNodePtr node, KeyType type)
- * @brief 지정한 노드를 기준으로 전위 순회하며 키를 출력하는 함수(재귀)
- * @param node 순회할 기준 노드의 주소(입력)
- * @param type 출력할 키의 데이터 유형(입력)
- * @return 반환값 없음
- */
-static void JNodePreorderTraverse(const JNodePtr node, KeyType type)
-{
-	if(node == NULL) return;
-	JNodePrintKey(node, type);
-	JNodePreorderTraverse(node->left, type);
-	JNodePreorderTraverse(node->right, type);
-}
-
-/**
- * @fn static void JNodeInorderTraverse(const JNodePtr node, KeyType type)
- * @brief 지정한 노드를 기준으로 중위 순회하며 키를 출력하는 함수(재귀)
- * @param node 순회할 기준 노드의 주소(입력)
- * @param type 출력할 키의 데이터 유형(입력)
- * @return 반환값 없음
- */
-static void JNodeInorderTraverse(const JNodePtr node, KeyType type)
-{
-	if(node == NULL) return;
-	JNodeInorderTraverse(node->left, type);
-	JNodePrintKey(node, type);
-	JNodeInorderTraverse(node->right, type);
-}
-
-/**
- * @fn static void JNodePostorderTraverse(const JNodePtr node, KeyType type)
- * @brief 지정한 노드를 기준으로 후위 순회하며 키를 출력하는 함수(재귀)
- * @param node 순회할 기준 노드의 주소(입력)
- * @param type 출력할 키의 데이터 유형(입력)
- * @return 반환값 없음
- */
-static void JNodePostorderTraverse(const JNodePtr node, KeyType type)
-{
-	if(node == NULL) return;
-	JNodePostorderTraverse(node->left, type);
-	JNodePostorderTraverse(node->right, type);
-	JNodePrintKey(node, type);
-}
-
-/**
  * @fn static void JNodePrintKey(const JNodePtr node, KeyType type)
  * @brief 지정한 노드의 키를 출력하는 함수
  * @param node 출력할 노드의 주소(입력, 읽기 전용)
@@ -622,7 +563,7 @@ static void JNodePrintKey(const JNodePtr node, KeyType type)
 
 /**
  * @fn static JNodePtr JNodeSetParentPtr(const JNodePtr node )
- * @brief 지정한 노드의 부모 노드에게 주소를 전달하는 함수
+ * @brief 지정한 노드의 부모 노드에게 주소를 전달하는 함수(재귀)
  * @param node 주소를 전달할 노드(입력, 읽기 전용)
  * @return 반환값 없음
  */
@@ -667,44 +608,6 @@ static JNodePtr JNodeGetUncle(const JNodePtr node)
 	return grandParentNode->right;
 }
 
-/**
- * @fn static int JNodeGetBlackHeight(const JNodePtr node)
- * @brief RB Tree 에서 지정한 Black 노드의 높이를 구하는 함수(재귀)
- * 루트 노드는 1, 이하 자식 노드 레벨(높이)부터 1 씩 증가
- * @param node 높이를 구하기 위한 노드(입력, 읽기 전용) 
- * @return 성공 시 0 이상의 높이, 실패 시 0 반환
- */
-static int JNodeGetBlackHeight(const JNodePtr node)
-{
-	if(node == NULL) return 0;
-
-	int leftHeight = JNodeGetBlackHeight(node->left);
-	int rightHeight = JNodeGetBlackHeight(node->right);
-
-	if(leftHeight > rightHeight)
-	{
-		if(node->color == Black) return leftHeight + 1;
-		return leftHeight;
-	}
-	else
-	{
-		if(node->color == Black) return rightHeight + 1;
-		return rightHeight;
-	}
-}
-
-/**
- * @fn static int JNodeGetBlackHeightDiff(const JNodePtr node)
- * @brief RB Tree 에서 지정한 노드의 자식노드들의 높이 차이를 구하는 함수(재귀)
- * @param node 높이의 차이를 구하기 위한 기준 노드(입력, 읽기 전용) 
- * @return 성공 시 자식 노드들의 높이 차이, 실패 시 0 반환
- */
-static int JNodeGetBlackHeightDiff(const JNodePtr node)
-{
-	if(node == NULL) return 0;
-	return JNodeGetBlackHeight(node->left) - JNodeGetBlackHeight(node->right);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 /// JRBTree Static Functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -735,21 +638,33 @@ static void JRBTreePrintHeight(const JNodePtr node, int height, KeyType type, ch
 }
 
 /**
- * @fn static JRBTreePtr JRBTreeRebalance(JRBTreePtr tree)
- * @brief RB Tree 의 BlackHeight 의 기준을 성립시키는 함수
- * 모든 리프 노드에서 루트 노드까지의 Black 노드의 개수는 동일
- * @param tree RB Tree 구조체 객체의 주소(입력, 읽기 전용)
- * @return 반환값 없음
+ * @fn static JRBTreePtr JRBTreeSetChildNode(const JRBTreePtr tree, const JNodePtr parentNode, const JNodePtr childNode)
+ * @brief 지정한 노드의 자식 노드를 설정하는 함수
+ * JRBTreeInsertNode 함수에서 호출되므로 매개변수 NULL 체크를 수행하지 않음
+ * @param tree RB Tree 구조체 객체의 주소(입력, 읽기 전용, RB tree 의 데이터 저장 유형을 사용)
+ * @param parentNode 자식 노드를 설정할 노드(입력, 읽기 전용)
+ * @param childNode 설정할 자식 노드(입력, 읽기 전용)
+ * @return 성공 시 사용한 RB Tree 의 주소, 실패 시 NULL 반환
  */
-static JRBTreePtr JRBTreeRebalance(const JRBTreePtr tree)
+static JRBTreePtr JRBTreeSetChildNode(const JRBTreePtr tree, const JNodePtr parentNode, const JNodePtr childNode)
 {
-	if(tree == NULL) return NULL;
-
-	int heightDiff = JNodeGetBlackHeightDiff(tree->root);
-
-	if(heightDiff >= 1) tree->root = JNodeRightRotate(tree->root);
-	if(heightDiff <= -1) tree->root = JNodeLeftRotate(tree->root);
-
+	switch(tree->type)
+	{
+		case IntType:
+			if(*((int*)(parentNode->key)) > *((int*)(childNode->key))) parentNode->left = childNode;
+			else parentNode->right = childNode;
+			break;
+		case CharType:
+			if(*((char*)(parentNode->key)) > *((char*)(childNode->key))) parentNode->left = childNode;
+			else parentNode->right = childNode;
+			break;
+		case StringType:
+			if(strncmp((char*)(parentNode->key), (char*)(childNode->key), _GetCompareLength((char*)(parentNode->key), (char*)(childNode->key))) > 0) parentNode->left = childNode;
+			else parentNode->right = childNode;
+			break;
+		default:
+			return NULL;
+	}
 	return tree;
 }
 
