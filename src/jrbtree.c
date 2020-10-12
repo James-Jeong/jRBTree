@@ -213,7 +213,6 @@ JRBTreePtr JRBTreeInsertNode(JRBTreePtr tree, void *key)
 		}
 
 		newNode->color = Red;
-		newNode->parent = parentNode;
 
 		JNodePtr grandParentNode = JNodeGetGrandParent(newNode);
 		if(grandParentNode != NULL)
@@ -396,6 +395,7 @@ JNodePtr JRBTreeFindNodeByKey(const JRBTreePtr tree, void *key)
 	{
 		currentNode = JNodeMove(currentNode, key, tree->type);
 	}
+
 	return currentNode;
 }
 
@@ -665,6 +665,8 @@ static JRBTreePtr JRBTreeSetChildNode(const JRBTreePtr tree, const JNodePtr pare
 		default:
 			return NULL;
 	}
+
+	childNode->parent = parentNode;
 	return tree;
 }
 
