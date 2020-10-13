@@ -132,8 +132,12 @@ if (_testSuit == NULL) { \
 /// Format Macros
 //////////////////////////////////////////////////////////////////////////////////
 #define NULL_FORMAT "actual:%p, expected:NULL"
-#define NUM1_FORMAT "actual:%d"
-#define NUM2_FORMAT "actual:%d, expected:%d"
+#define NUM1_FORMAT_int "actual:%d"
+#define NUM1_FORMAT_long "actual:%ld"
+#define NUM1_FORMAT_longlong "actual:%lld"
+#define NUM2_FORMAT_int "actual:%d, expected:%d"
+#define NUM2_FORMAT_long "actual:%ld, expected:%ld"
+#define NUM2_FORMAT_longlong "actual:%lld, expected:%lld"
 #define PTR_FORMAT "actual:%p, expected:%p"
 #define STR_FORMAT "actual:%s, expected:%s"
 
@@ -178,47 +182,47 @@ if (_testSuit == NULL) { \
 #define EXPECT_NUM_EQUAL(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type != _expected##type) { PRINT_FAIL("EXPECT_NUM_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type != _expected##type) { PRINT_FAIL("EXPECT_NUM_EQUAL", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값과 기대하는 값이 다른지 검사하는 함수
 #define EXPECT_NUM_NOT_EQUAL(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type == _expected##type) { PRINT_FAIL("EXPECT_NUM_NOT_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type == _expected##type) { PRINT_FAIL("EXPECT_NUM_NOT_EQUAL", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값이 기대하는 값보다 작거나 같은지 검사하는 함수
 #define EXPECT_NUM_LESS_EQUAL(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type > _expected##type) { PRINT_FAIL("EXPECT_NUM_LESS_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type > _expected##type) { PRINT_FAIL("EXPECT_NUM_LESS_EQUAL", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값이 기대하는 값보다 작은지 검사하는 함수
 #define EXPECT_NUM_LESS_THAN(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type >= _expected##type) { PRINT_FAIL("EXPECT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type >= _expected##type) { PRINT_FAIL("EXPECT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값이 기대하는 값보다 크거나 같은지 검사하는 함수
 #define EXPECT_NUM_GREATER_EQUAL(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type < _expected##type) { PRINT_FAIL("EXPECT_NUM_GREATER_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type < _expected##type) { PRINT_FAIL("EXPECT_NUM_GREATER_EQUAL", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값이 기대하는 값보다 큰지 검사하는 함수
 #define EXPECT_NUM_GREATER_THAN(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type <= _expected##type) { PRINT_FAIL("EXPECT_NUM_GREATER_THAN", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type <= _expected##type) { PRINT_FAIL("EXPECT_NUM_GREATER_THAN", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 지정한 숫자가 짝수인지 검사하는 함수
 #define EXPECT_NUM_EVEN(actual, type) \
 	_actual##type = actual; \
-	if(_actual##type % 2 != 0) { PRINT_FAIL("EXPECT_NUM_EVEN", __FILE__, __LINE__, NUM1_FORMAT, _actual##type); }
+	if(_actual##type % 2 != 0) { PRINT_FAIL("EXPECT_NUM_EVEN", __FILE__, __LINE__, NUM1_FORMAT_##type, _actual##type); }
 
 // 지정한 숫자가 홀수인지 검사하는 함수
 #define EXPECT_NUM_ODD(actual, type) \
 	_actual##type = actual; \
-	if(_actual##type % 2 != 1) { PRINT_FAIL("EXPECT_NUM_ODD", __FILE__, __LINE__, NUM1_FORMAT, _actual##type); }
+	if(_actual##type % 2 != 1) { PRINT_FAIL("EXPECT_NUM_ODD", __FILE__, __LINE__, NUM1_FORMAT_##type, _actual##type); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (EXPECT) String Macro Functions
@@ -261,47 +265,47 @@ if (_testSuit == NULL) { \
 #define ASSERT_NUM_EQUAL(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type != _expected##type) { PRINT_FAIL("ASSERT_NUM_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type != _expected##type) { PRINT_FAIL("ASSERT_NUM_EQUAL", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값과 기대하는 값이 다른지 검사하는 함수
 #define ASSERT_NUM_NOT_EQUAL(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type == _expected##type) { PRINT_FAIL("ASSERT_NUM_NOT_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type == _expected##type) { PRINT_FAIL("ASSERT_NUM_NOT_EQUAL", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값이 기대하는 값보다 작거나 같은지 검사하는 함수
 #define ASSERT_NUM_LESS_EQUAL(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type > _expected##type) { PRINT_FAIL("ASSERT_NUM_LESS_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type > _expected##type) { PRINT_FAIL("ASSERT_NUM_LESS_EQUAL", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값이 기대하는 값보다 작은지 검사하는 함수
 #define ASSERT_NUM_LESS_THAN(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type >= _expected##type) { PRINT_FAIL("ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type >= _expected##type) { PRINT_FAIL("ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2_FORMAT_##type, _actual##type, _expected##type); }
 
 // 실제 값이 기대하는 값보다 크거나 같은지 검사하는 함수
 #define ASSERT_NUM_GREATER_EQUAL(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type < _expected##type) { PRINT_FAIL("ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2_FORMAT, _actual##type, _expected##type); }
+	if(_actual##type < _expected##type) { PRINT_FAIL("ASSERT_NUM_LESS_THAN", __FILE__, __LINE__, NUM2##tyup_FORMAT, _actual##type, _expected##type); }
 
 // 실제 값이 기대하는 값보다 큰지 검사하는 함수
 #define ASSERT_NUM_GREATER_THAN(actual, expected, type) \
 	_actual##type = actual; \
 	_expected##type = expected; \
-	if(_actual##type <= _expected##type) { PRINT_FAIL("ASSERT_NUM_GREATER_EQUAL", __FILE__, __LINE__, NUM2_FORMAT, actual##type, expected##type); }
+	if(_actual##type <= _expected##type) { PRINT_FAIL("ASSERT_NUM_GREATER_EQUAL", __FILE__, __LINE__, NUM2_FORMAT_##type, actual##type, expected##type); }
 
 // 지정한 숫자가 짝수인지 검사하는 함수
 #define ASSERT_NUM_EVEN(actual, type) \
 	_actual##type = actual; \
-	if(_actual##type % 2 != 0) { PRINT_FAIL("ASSERT_NUM_EVEN", __FILE__, __LINE__, NUM1_FORMAT, _actual##type); }
+	if(_actual##type % 2 != 0) { PRINT_FAIL("ASSERT_NUM_EVEN", __FILE__, __LINE__, NUM1_FORMAT_##type, _actual##type); }
 
 // 지정한 숫자가 홀수인지 검사하는 함수
 #define ASSERT_NUM_ODD(actual, type)\
 	_actual##type = actual; \
-	if(_actual##type % 2 != 1) ? { PRINT_FAIL("ASSERT_NUM_ODD", __FILE__, __LINE__, NUM1_FORMAT, _actual##type); }
+	if(_actual##type % 2 != 1) ? { PRINT_FAIL("ASSERT_NUM_ODD", __FILE__, __LINE__, NUM1_FORMAT_##type, _actual##type); }
 
 //////////////////////////////////////////////////////////////////////////////////
 /// (ASSERT) String Macro Functions
